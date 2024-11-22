@@ -17,7 +17,12 @@ public class GDAL : ModuleRules
 	private string TargetIdentifier(ReadOnlyTargetRules target)
 	{
 		//Append the target's architecture to its platform name if an architecture was specified
-		string id = (target.Architecture != null /*&& target.Architecture.Length > 0*/) ?
+		string id = 
+#if UE_5_0_OR_LATER
+		(target.Architecture != null) ?
+#else
+		(target.Architecture != null && target.Architecture.Length > 0) ?
+#endif
 			String.Format("{0}-{1}", target.Platform.ToString(), target.Architecture) :
 			target.Platform.ToString();
 		
