@@ -19,3 +19,5 @@ class GDALConan(ConanFile):
     def requirements(self):
         self._requireUnreal("gdal-ue4/2.4.0@adamrehn/{}")
         self._requireUnreal("mergetiff-ue4/0.0.6@adamrehn/{}")
+        self._requireUnreal("OpenSSL/ue4@adamrehn/{}") 
+        self._requireUnreal("nghttp2/ue4@adamrehn/{}")
