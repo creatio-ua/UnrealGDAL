@@ -83,7 +83,7 @@ public class GDAL : ModuleRules
 			{
 				PublicAdditionalLibraries.Add(lib);
 			}
-			
+		
 			//Ensure any shared libraries are staged alongside the binaries for the plugin
 			List<string> searchDirs = new List<string>();
 			searchDirs.AddRange(dep.GetStringArrayField("bin_paths"));
@@ -115,7 +115,7 @@ public class GDAL : ModuleRules
 	private bool ProcessPrecomputedData(ReadOnlyTargetRules target, string engineVersion, string stagingDir)
 	{
 		//Resolve the paths to the files and directories that will exist if we have precomputed data for the target
-		string targetDir = Path.Combine(ModuleDirectory, "precomputed", engineVersion, this.TargetIdentifier(target));
+		string targetDir = Path.Combine(ModuleDirectory, "precomputed", engineVersion, target.Platform.ToString());
 		string flagsFile = Path.Combine(targetDir, "flags.json");
 		string includeDir = Path.Combine(targetDir, "include");
 		string libDir = Path.Combine(targetDir, "lib");
@@ -124,6 +124,12 @@ public class GDAL : ModuleRules
 		
 		//If any of the required files or directories do not exist then we do not have precomputed data
 		if (!File.Exists(flagsFile) || !Directory.Exists(includeDir) || !Directory.Exists(libDir) || !Directory.Exists(binDir) || !Directory.Exists(dataDir)) {
+			Console.WriteLine($"-- Unexpected exit. Target dir: {targetDir} - {Directory.Exists(dataDir)}");
+			Console.WriteLine($"-- Unexpected exit. Flags file: {flagsFile} - {File.Exists(flagsFile)}");
+			Console.WriteLine($"-- Unexpected exit. include dir: {includeDir} - {Directory.Exists(includeDir)}");
+			Console.WriteLine($"-- Unexpected exit. lib dir: {libDir} - {Directory.Exists(libDir)}");
+			Console.WriteLine($"-- Unexpected exit. bin dir: {binDir} - {Directory.Exists(binDir)}");
+			Console.WriteLine($"-- Unexpected exit. datadir: {dataDir} - {Directory.Exists(dataDir)}");
 			return false;
 		}
 		
@@ -134,6 +140,7 @@ public class GDAL : ModuleRules
 		string libExtension = ((this.IsWindows(target)) ? ".lib" : ".a");
 		string[] libs = Directory.GetFiles(libDir, "*" + libExtension);
 		foreach(string lib in libs) {
+			Console.WriteLine("-- Adding lib: " + lib);
 			PublicAdditionalLibraries.Add(lib);
 		}
 		
@@ -174,8 +181,12 @@ public class GDAL : ModuleRules
 		string[] systemLibs = flags.GetStringArrayField("system_libs");
 		foreach (string lib in systemLibs)
 		{
+#if UE_5_0_OR_LATER
+			PublicAdditionalLibraries.Add(lib);
+#else
 			string libFull = lib + ((this.IsWindows(target)) ? libExtension : "");
 			PublicAdditionalLibraries.Add(libFull);
+#endif
 		}
 		
 		//Copy any data files needed by the package into our staging directory
@@ -190,7 +201,6 @@ public class GDAL : ModuleRules
 	public GDAL(ReadOnlyTargetRules Target) : base(Target)
 	{
 		Type = ModuleType.External;
-		
 		//Ensure our staging directory exists prior to copying any dependency data files into it
 		string stagingDir = Path.Combine("$(ProjectDir)", "Binaries", "Data", "GDAL");
 		if (!Directory.Exists(stagingDir)) {
@@ -205,7 +215,11 @@ public class GDAL : ModuleRules
 			Process.Start(new ProcessStartInfo
 			{
 				FileName = "conan",
+#if UE_5_0_OR_LATER
+				Arguments = $"install . -g=json --profile=ue{engineVersion}-{Target.Platform.ToString()}",
+#else
 				Arguments = "install . -g=json --profile=ue" + engineVersion + "-" + this.TargetIdentifier(Target),
+#endif
 				WorkingDirectory = ModuleDirectory,
 				UseShellExecute = false
 			})
