@@ -188,6 +188,15 @@ public class GDAL : ModuleRules
 			PublicAdditionalLibraries.Add(libFull);
 #endif
 		}
+
+		// Workaround for the linker being unable to locate ATLS.LIB under VS Code
+		if(this.IsWindows(target) && target.WindowsPlatform.ToolChainDir != null)
+		{
+			string atlPath = Path.Combine(target.WindowsPlatform.ToolChainDir, "atlmfc", "lib", 
+				target.Architecture.ToString());
+			Console.WriteLine($"Adding ATLS.LIB path: {atlPath}");
+			PublicSystemLibraryPaths.Add(atlPath);
+		}
 		
 		//Copy any data files needed by the package into our staging directory
 		string[] files = Directory.GetFiles(dataDir, "*", SearchOption.AllDirectories);
