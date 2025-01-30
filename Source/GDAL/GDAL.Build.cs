@@ -13,6 +13,7 @@ using EpicGames.Core;
 
 public class GDAL : ModuleRules
 {
+	private bool isDebug;
 	//Returns the identifier string for the given target, which includes its platform, architecture (if specified), and debug CRT status
 	private string TargetIdentifier(ReadOnlyTargetRules target)
 	{
@@ -27,8 +28,7 @@ public class GDAL : ModuleRules
 			target.Platform.ToString();
 		
 		//Append a debug suffix for Windows debug targets that actually use the debug CRT
-		bool isDebug = (target.Configuration == UnrealTargetConfiguration.Debug || target.Configuration == UnrealTargetConfiguration.DebugGame);
-		if (isDebug && target.bDebugBuildsActuallyUseDebugCRT) {
+		if (isDebug) {
 			id += "-Debug";
 		}
 		
@@ -116,6 +116,11 @@ public class GDAL : ModuleRules
 	{
 		//Resolve the paths to the files and directories that will exist if we have precomputed data for the target
 		string targetDir = Path.Combine(ModuleDirectory, "precomputed", engineVersion, target.Platform.ToString());
+		//TODO: The full debug GDAL version doesn't link with UE stuff yet 
+		// if(isDebug)
+		// {
+		// 	targetDir += "-Debug";
+		// }
 		string flagsFile = Path.Combine(targetDir, "flags.json");
 		string includeDir = Path.Combine(targetDir, "include");
 		string libDir = Path.Combine(targetDir, "lib");
@@ -210,6 +215,15 @@ public class GDAL : ModuleRules
 	public GDAL(ReadOnlyTargetRules Target) : base(Target)
 	{
 		Type = ModuleType.External;
+		bEnableExceptions = true;
+		PCHUsage = PCHUsageMode.NoPCHs;
+		isDebug = (Target.Configuration == UnrealTargetConfiguration.Debug || 
+			Target.Configuration == UnrealTargetConfiguration.DebugGame);
+	
+		if(!isDebug)
+		{
+			PublicAdditionalLibraries.Add("atls.lib");
+		}
 		//Ensure our staging directory exists prior to copying any dependency data files into it
 		string stagingDir = Path.Combine("$(ProjectDir)", "Binaries", "Data", "GDAL");
 		if (!Directory.Exists(stagingDir)) {
