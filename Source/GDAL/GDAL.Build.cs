@@ -203,6 +203,28 @@ public class GDAL : ModuleRules
 			PublicSystemLibraryPaths.Add(atlPath);
 		}
 		
+		        // Add CUDA library path if CUDA_HOME or CUDA_PATH is defined
+        string cudaPath = Environment.GetEnvironmentVariable("CUDA_PATH");
+        if (string.IsNullOrEmpty(cudaPath))
+        {
+            cudaPath = Environment.GetEnvironmentVariable("CUDA_HOME");
+        }
+
+        if (!string.IsNullOrEmpty(cudaPath) && Target.Platform == UnrealTargetPlatform.Win64)
+        {
+            string cudaLibPath = Path.Combine(cudaPath, "lib", "x64");
+            if (Directory.Exists(cudaLibPath))
+            {
+                Console.WriteLine($"Adding CUDA lib path: {cudaLibPath}");
+                PublicSystemLibraryPaths.Add(cudaLibPath);
+				PublicAdditionalLibraries.Add("OpenCL.lib");
+            }
+            else
+            {
+                Console.WriteLine($"CUDA lib path not found: {cudaLibPath}");
+            }
+        }
+
 		//Copy any data files needed by the package into our staging directory
 		string[] files = Directory.GetFiles(dataDir, "*", SearchOption.AllDirectories);
 		foreach(string file in files) {
