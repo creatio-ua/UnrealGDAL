@@ -32,7 +32,7 @@ To build the plugin from source without using the [precomputed dependency data](
     
     ```bash
     # Build the packages for GDAL version 2.4.0 and mergetiff-cxx version 0.0.6
-    ue4 conan build "gdal-ue4==2.4.0" "mergetiff-ue4==0.0.6"
+    ue4 conan build "gdal-ue4==3.10.0" "mergetiff-ue4==0.0.6"
     ```
 
 3. Once the Conan packages are built, you will be able to build or package any Unreal project which uses the UnrealGDAL plugin as normal.
