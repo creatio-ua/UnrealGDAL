@@ -6,7 +6,7 @@ This plugin provides access to the [GDAL/OGR](https://gdal.org/) C++ API inside 
 
 This plugin uses [conan-ue4cli](https://github.com/adamrehn/conan-ue4cli) to bundle GDAL and its dependencies in a cross-platform manner. Note that you will not need conan-ue4cli installed if you [use a binary release of the plugin](#using-release-binaries), but you will need conan-ue4cli installed and properly configured in order to [build the plugin and all of its dependencies from source](#building-everything-from-source).
 
-**Note that this plugin requires Unreal Engine version 4.25.0 or newer.**
+**Note that this plugin requires Unreal Engine version 5.3.2 or newer.**
 
 
 ## Contents
@@ -33,7 +33,7 @@ To build the plugin from source without using the [precomputed dependency data](
 2. Build the Conan packages for the plugin's dependencies using the [ue4 conan build](https://docs.adamrehn.com/conan-ue4cli/commands/build) command:
     
     ```bash
-    # Build the packages for GDAL version 2.4.0 and mergetiff-cxx version 0.0.6
+    # Build the packages for GDAL version 3.10.0 and mergetiff-cxx version 0.0.6
     ue4 conan build "gdal-ue4==3.10.0" "mergetiff-ue4==0.0.6"
     ```
 
@@ -92,5 +92,6 @@ Binary releases of this plugin contain the following third-party libraries, whic
 - [GDAL](https://gdal.org/) ([X/MIT License](https://github.com/OSGeo/gdal/blob/master/gdal/LICENSE.TXT))
 - [GEOS](https://trac.osgeo.org/geos) ([LGPL-2.1 License](https://github.com/libgeos/geos/blob/master/COPYING))
 - [PROJ](https://proj.org/) ([X/MIT License](https://github.com/OSGeo/PROJ/blob/master/COPYING))
+- [sqlite3](https://www.sqlite.org/) ([Public Domain](https://www.sqlite.org/copyright.html))
 
-GDAL and PROJ are linked statically, whereas GEOS is linked dynamically due to the [static linking requirements of the LGPL License](https://www.gnu.org/licenses/gpl-faq.en.html#LGPLStaticVsDynamic) and mergetiff is a header-only library. The source code for all of these libraries is bundled with binary releases of the plugin under the [ThirdParty](./ThirdParty) directory.
+GDAL and PROJ are linked statically, whereas GEOS is linked dynamically due to the [static linking requirements of the LGPL License](https://www.gnu.org/licenses/gpl-faq.en.html#LGPLStaticVsDynamic) and mergetiff is a header-only library. The source code for all of these libraries is bundled with binary releases of the plugin under the [ThirdParty](./ThirdParty) directory. The sqlite3 is linked dynamically to avoid the conflict with the embedded version of sqlite3 in UE.
