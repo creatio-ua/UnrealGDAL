@@ -1,4 +1,6 @@
-# UnrealGDAL: Unreal Engine GDAL plugin
+# UnrealGDAL: Unreal Engine GDAL plugin for UE 5.3.2
+
+This fork contains the necessary changes to have a working UE5 build with the updated versions of the dependent libraries (GDAL v.3.10). It relies on the [recipes repo](https://github.com/creatio-ua/ue4-conan-recipes.git) (the original recipes' caching is disabled here to avoid conflicts with the old UE4 version).
 
 This plugin provides access to the [GDAL/OGR](https://gdal.org/) C++ API inside the Unreal Engine, allowing Unreal projects and plugins to easily import and manipulate geospatial data. In addition to providing access to the full GDAL/OGR C++ API surface, the plugin bundles the header-only [mergetiff](https://github.com/adamrehn/mergetiff-cxx) library for providing [convenient smart pointer types](./Source/UnrealGDAL/Public/SmartPointers.h), and includes [interoperability functionality](./Source/UnrealGDAL/Public/GDALHelpers.h) for accessing the GDAL/OGR API using native Unreal Engine datatypes.
 
